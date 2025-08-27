@@ -6,7 +6,6 @@ const buildUrl = (endpoint) => {
 
 export const fetchData = async (endpoint) => {
   const url = buildUrl(endpoint);
-
   try {
     const res = await fetch(url);
 
@@ -14,7 +13,6 @@ export const fetchData = async (endpoint) => {
       const text = await res.text();
       throw new Error(`GET ${url} → ${res.status} | Respuesta: ${text}`);
     }
-
     return await res.json();
   } catch (err) {
     console.error("Error en fetchData:", err);
@@ -29,7 +27,6 @@ export const postData = async (endpoint, payload, token, extraHeaders = {}) => {
     ...(token && { Authorization: `Bearer ${token}` }),
     ...extraHeaders,
   };
-
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -38,13 +35,10 @@ export const postData = async (endpoint, payload, token, extraHeaders = {}) => {
       mode: "cors",
       credentials: "include",
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || `POST ${url} → ${res.status}`);
     }
-
     return data;
   } catch (err) {
     throw err;
@@ -58,7 +52,6 @@ export const putData = async (endpoint, payload, token, extraHeaders = {}) => {
     ...(token && { Authorization: `Bearer ${token}` }),
     ...extraHeaders,
   };
-
   try {
     const res = await fetch(url, {
       method: "PUT",
@@ -67,13 +60,10 @@ export const putData = async (endpoint, payload, token, extraHeaders = {}) => {
       mode: "cors",
       credentials: "include",
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || `PUT ${url} → ${res.status}`);
     }
-
     return data;
   } catch (err) {
     throw err;
@@ -85,7 +75,6 @@ export const deleteData = async (endpoint, token) => {
   const headers = {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
-
   try {
     const res = await fetch(url, {
       method: "DELETE",
@@ -93,12 +82,10 @@ export const deleteData = async (endpoint, token) => {
       mode: "cors",
       credentials: "include",
     });
-
     if (!res.ok) {
       const text = await res.text();
       throw new Error(`DELETE ${url} → ${res.status} | Respuesta: ${text}`);
     }
-
     return true;
   } catch (err) {
     throw err;
@@ -110,8 +97,7 @@ export const loginUser = async (correo, password) => {
   const payload = { correo, password };
   const headers = {
     "Content-Type": "application/json",
-  };
-
+  }
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -120,54 +106,12 @@ export const loginUser = async (correo, password) => {
       mode: "cors",
       credentials: "include",
     });
-
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.error || `POST ${url} → ${res.status}`);
     }
-
     return data;
   } catch (err) {
     throw err;
   }
 };
-
-export const cambiarPassword = async (usuarioId, payload, token) => {
-  const url = buildUrl(`/usuarios/${usuarioId}/cambiar-password`);
-
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-
-  try {
-    const res = await fetch(url, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(payload),
-      mode: "cors",
-      credentials: "include",
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || `PUT ${url} → ${res.status}`);
-    }
-
-    return data;
-  } catch (err) {
-    throw err;
-  }
-};
-
-
-export const forgotPassword = async (email) => {
-  return postData("/auth/forgot-password", { email });
-};
-
-export const resetPassword = async (token, newPassword) => {
-  return postData("/auth/reset-password", { token, newPassword });
-};
-
